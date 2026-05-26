@@ -1,0 +1,19 @@
+{
+  "name": "atlas",
+  "interface": {
+    "displayName": "atlas"
+  },
+  "plugins": [
+    {
+      "name": "atlas",
+      "source": {
+        "source": "local",
+        "path": "./plugins/atlas"
+      },
+      "policy": {
+        "installation": "AVAILABLE"
+      },
+      "category": "Integration"
+    }
+  ]
+}
