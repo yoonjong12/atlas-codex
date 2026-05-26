@@ -118,10 +118,10 @@ jira_create_issue_link({
 
 ## Custom Field Resolution
 
-Before using custom fields (story points, start date), read `~/.claude/atlas/fields.json`:
+Before using custom fields (story points, start date), read `~/.codex/atlas/fields.json`:
 
 ```bash
-cat ~/.claude/atlas/fields.json
+cat ~/.codex/atlas/fields.json
 ```
 
 Use the resolved field ID instead of guessing. Example:

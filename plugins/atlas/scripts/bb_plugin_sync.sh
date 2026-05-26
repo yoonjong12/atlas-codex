@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Sync Claude Code plugins from remote to local.
-# Scans ~/.claude/plugins/marketplaces/ — the single source of truth for plugin clones.
+# Scans ~/.codex/.tmp/marketplaces/ — the single source of truth for plugin clones.
 # Usage: bb_plugin_sync.sh <subcommand> [args]
 
 set -euo pipefail

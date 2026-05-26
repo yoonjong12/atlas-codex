@@ -29,14 +29,14 @@ WORKSPACE=mindai REPO_SLUG=pcr_skill_networking bb_pr.sh list
 
 ## Plugin Update Recovery
 
-The `atlas` plugin cache at `~/.claude/plugins/cache/atlas/atlas/<version>/skills/` holds SKILL.md files rewritten to call these scripts. On plugin upgrade (e.g. 0.2.1 → 0.2.2), the new version directory will ship upstream SKILL.md that reverts to inline curl.
+The `atlas` plugin cache at `~/.codex/plugins/cache/atlas/atlas/<version>/skills/` holds SKILL.md files rewritten to call these scripts. On plugin upgrade (e.g. 0.2.1 → 0.2.2), the new version directory will ship upstream SKILL.md that reverts to inline curl.
 
 Re-apply after update:
 
 ```bash
 # 1. diff old (rewritten) vs new (upstream) SKILLs
-diff -r ~/.claude/plugins/cache/atlas/atlas/0.2.1/skills \
-        ~/.claude/plugins/cache/atlas/atlas/<new>/skills
+diff -r ~/.codex/plugins/cache/atlas/atlas/0.2.1/skills \
+        ~/.codex/plugins/cache/atlas/atlas/<new>/skills
 
 # 2. re-apply by asking Claude: "refactor new atlas SKILL.md to use bb_*.sh"
 ```
@@ -45,13 +45,13 @@ Scripts in this directory are user-owned; plugin upgrades do not touch them.
 
 ## Allowlist
 
-`~/.claude/settings.json` contains:
+`~/.codex/settings.json` contains:
 
 ```json
-"Bash(~/.claude/atlas/scripts/bb_auth.sh:*)",
-"Bash(~/.claude/atlas/scripts/bb_pr.sh:*)",
-"Bash(~/.claude/atlas/scripts/bb_pipeline.sh:*)",
-"Bash(~/.claude/atlas/scripts/bb_repo.sh:*)"
+"Bash(~/.codex/plugins/cache/atlas/atlas/*/scripts/bb_auth.sh:*)",
+"Bash(~/.codex/plugins/cache/atlas/atlas/*/scripts/bb_pr.sh:*)",
+"Bash(~/.codex/plugins/cache/atlas/atlas/*/scripts/bb_pipeline.sh:*)",
+"Bash(~/.codex/plugins/cache/atlas/atlas/*/scripts/bb_repo.sh:*)"
 ```
 
 → no permission prompts for these script invocations.

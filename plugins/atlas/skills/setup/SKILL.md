@@ -31,7 +31,7 @@ python3 -c "
 import json, os
 config_paths = [
     os.path.expanduser('~/.codex/config.json'),
-    os.path.expanduser('~/.claude.json'),
+    os.path.expanduser('~/.codex/config.json'),
 ]
 for p in config_paths:
     if os.path.exists(p):
@@ -131,8 +131,8 @@ for f in fields:
 
 mapping['_source'] = '${JIRA_URL}/rest/api/3/field'
 
-os.makedirs(os.path.expanduser('~/.claude/atlas'), exist_ok=True)
-with open(os.path.expanduser('~/.claude/atlas/fields.json'), 'w') as out:
+os.makedirs(os.path.expanduser('~/.codex/atlas'), exist_ok=True)
+with open(os.path.expanduser('~/.codex/atlas/fields.json'), 'w') as out:
     json.dump(mapping, out, indent=2)
 print('Discovered fields:')
 for k, v in mapping.items():
@@ -143,7 +143,7 @@ for k, v in mapping.items():
 
 If `story_points` is not found, ask the user which field their project uses.
 
-The mapping is stored at `~/.claude/atlas/fields.json` and referenced by all atlas skills.
+The mapping is stored at `~/.codex/atlas/fields.json` and referenced by all atlas skills.
 
 ### Step 6: Report Status
 
