@@ -5,7 +5,7 @@ description: "Bitbucket repository operations — clone, info, branches, commits
 
 # Repo — Bitbucket Repository Operations
 
-All operations are wrapped in `${CODEX_PLUGIN_ROOT}/scripts/bb_repo.sh`. Invoke subcommands instead of writing curl. Repo is auto-detected from `git remote get-url origin`; override with `WORKSPACE=… REPO_SLUG=…` env.
+All operations are wrapped in `${PLUGIN_ROOT}/scripts/bb_repo.sh`. Invoke subcommands instead of writing curl. Repo is auto-detected from `git remote get-url origin`; override with `WORKSPACE=… REPO_SLUG=…` env.
 
 ## Prerequisites
 

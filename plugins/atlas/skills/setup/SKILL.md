@@ -100,7 +100,7 @@ If missing, guide the user:
 ### Step 4: Verify Bitbucket Connectivity
 
 ```bash
-${CODEX_PLUGIN_ROOT}/scripts/bb_auth.sh
+${PLUGIN_ROOT}/scripts/bb_auth.sh
 ```
 
 Emits `OK: Bitbucket connected as <email>` on success. Failure modes:

@@ -5,7 +5,7 @@ description: "Check Bitbucket Cloud pipeline status, wait for completion, and di
 
 # Pipeline — Bitbucket CI Status
 
-All operations are wrapped in `${CODEX_PLUGIN_ROOT}/scripts/bb_pipeline.sh`. Invoke subcommands instead of writing curl. Repo is auto-detected from `git remote get-url origin`.
+All operations are wrapped in `${PLUGIN_ROOT}/scripts/bb_pipeline.sh`. Invoke subcommands instead of writing curl. Repo is auto-detected from `git remote get-url origin`.
 
 ## Prerequisites
 

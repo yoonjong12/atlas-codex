@@ -5,7 +5,7 @@ description: "Access Bitbucket Cloud pull requests — view details, diffs, comm
 
 # PR — Bitbucket Pull Request Access
 
-All operations are wrapped in `${CODEX_PLUGIN_ROOT}/scripts/bb_pr.sh`. Invoke subcommands instead of writing curl. Repo (workspace/slug) is auto-detected from `git remote get-url origin`; override with `WORKSPACE=… REPO_SLUG=…` env.
+All operations are wrapped in `${PLUGIN_ROOT}/scripts/bb_pr.sh`. Invoke subcommands instead of writing curl. Repo (workspace/slug) is auto-detected from `git remote get-url origin`; override with `WORKSPACE=… REPO_SLUG=…` env.
 
 ## Prerequisites
 
