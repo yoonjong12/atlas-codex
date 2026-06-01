@@ -4,6 +4,17 @@ set -euo pipefail
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 source "$SCRIPT_DIR/_lib.sh"
 
+_read_value() {
+  local value="${1:-}"
+  if [[ "$value" == @* ]]; then
+    local file="${value#@}"
+    [[ -f "$file" ]] || _die "file not found: $file"
+    cat "$file"
+  else
+    printf '%s' "$value"
+  fi
+}
+
 cmd=${1:-}
 [[ -z "$cmd" ]] && _usage "bb_pr.sh" \
   "get <pr_id>                        PR details (title/state/branches/dates)" \
@@ -12,10 +23,12 @@ cmd=${1:-}
   "activity <pr_id>                   approvals/updates/comment activity" \
   "list [state]                       list PRs (default OPEN)" \
   "find-by-branch [branch]            open PR for branch (default: current)" \
+  "create <title> [desc|@file] [source] [dest]  create PR (branches default current -> main)" \
   "comment <pr_id> <body>             post general comment" \
   "inline <pr_id> <path> <line> <body>  post inline comment on path:line (to-line)" \
-  "update <pr_id> <key> <value>       update title or description" \
-  "approve <pr_id>                    approve PR"
+  "update <pr_id> <key> <value|@file> update title or description" \
+  "approve <pr_id>                    approve PR" \
+  "merge <pr_id> [message|@file]      merge PR and close source branch"
 shift
 
 case "$cmd" in
@@ -103,22 +116,51 @@ else:
     print('no open PR for branch',b)
 "
     ;;
+  create)
+    title=${1:?title}; desc_arg=${2:-}; source_branch=${3:-$(git branch --show-current)}; dest_branch=${4:-main}
+    description=$(_read_value "$desc_arg")
+    [[ -n "$source_branch" ]] || _die "source branch is required"
+    _detect_repo
+    payload=$(python3 - "$title" "$description" "$source_branch" "$dest_branch" <<'PY'
+import json
+import sys
+
+title, description, source_branch, dest_branch = sys.argv[1:5]
+print(json.dumps({
+    "title": title,
+    "description": description,
+    "source": {"branch": {"name": source_branch}},
+    "destination": {"branch": {"name": dest_branch}},
+    "close_source_branch": True,
+}))
+PY
+)
+    _curl -X POST -H "Content-Type: application/json" -d "$payload" \
+      "$API/repositories/$WORKSPACE/$REPO_SLUG/pullrequests" \
+      | _py "
+import sys,json
+d=json.load(sys.stdin)
+print(f'created #{d[\"id\"]}: {d[\"title\"]}')
+print(f'Branch: {d[\"source\"][\"branch\"][\"name\"]} -> {d[\"destination\"][\"branch\"][\"name\"]}')
+print(f'URL: {d[\"links\"][\"html\"][\"href\"]}')
+"
+    ;;
   comment)
-    pr=${1:?pr_id}; body=${2:?body}; _detect_repo
+    pr=${1:?pr_id}; body=$(_read_value "${2:?body}"); _detect_repo
     _curl -X POST -H "Content-Type: application/json" \
       -d "$(python3 -c 'import json,sys; print(json.dumps({"content":{"raw":sys.argv[1]}}))' "$body")" \
       "$API/repositories/$WORKSPACE/$REPO_SLUG/pullrequests/$pr/comments" \
       | _py "import sys,json; d=json.load(sys.stdin); print(f'posted comment id={d.get(\"id\")}')"
     ;;
   inline)
-    pr=${1:?pr_id}; path=${2:?path}; line=${3:?line}; body=${4:?body}; _detect_repo
+    pr=${1:?pr_id}; path=${2:?path}; line=${3:?line}; body=$(_read_value "${4:?body}"); _detect_repo
     payload=$(python3 -c 'import json,sys; print(json.dumps({"content":{"raw":sys.argv[1]},"inline":{"path":sys.argv[2],"to":int(sys.argv[3])}}))' "$body" "$path" "$line")
     _curl -X POST -H "Content-Type: application/json" -d "$payload" \
       "$API/repositories/$WORKSPACE/$REPO_SLUG/pullrequests/$pr/comments" \
       | _py "import sys,json; d=json.load(sys.stdin); print(f'posted inline id={d.get(\"id\")} on {d.get(\"inline\",{}).get(\"path\")}:{d.get(\"inline\",{}).get(\"to\")}')"
     ;;
   update)
-    pr=${1:?pr_id}; key=${2:?key=title|description}; val=${3:?value}; _detect_repo
+    pr=${1:?pr_id}; key=${2:?key=title|description}; val=$(_read_value "${3:?value}"); _detect_repo
     [[ "$key" == "title" || "$key" == "description" ]] || _die "update key must be title or description"
     payload=$(python3 -c 'import json,sys; print(json.dumps({sys.argv[1]: sys.argv[2]}))' "$key" "$val")
     _curl -X PUT -H "Content-Type: application/json" -d "$payload" \
@@ -129,6 +171,29 @@ else:
     pr=${1:?pr_id}; _detect_repo
     _curl -X POST "$API/repositories/$WORKSPACE/$REPO_SLUG/pullrequests/$pr/approve" \
       | _py "import sys,json; d=json.load(sys.stdin); print(f'approved by {d[\"user\"][\"display_name\"]}')"
+    ;;
+  merge)
+    pr=${1:?pr_id}; message=$(_read_value "${2:-}"); _detect_repo
+    payload=$(python3 - "$message" <<'PY'
+import json
+import sys
+
+message = sys.argv[1]
+payload = {"close_source_branch": True}
+if message:
+    payload["message"] = message
+print(json.dumps(payload))
+PY
+)
+    _curl -X POST -H "Content-Type: application/json" -d "$payload" \
+      "$API/repositories/$WORKSPACE/$REPO_SLUG/pullrequests/$pr/merge" \
+      | _py "
+import sys,json
+d=json.load(sys.stdin)
+print(f'merged #{d[\"id\"]}: {d[\"title\"]}')
+print(f'State: {d[\"state\"]}')
+print(f'URL: {d[\"links\"][\"html\"][\"href\"]}')
+"
     ;;
   *) _die "unknown subcommand: $cmd" ;;
 esac

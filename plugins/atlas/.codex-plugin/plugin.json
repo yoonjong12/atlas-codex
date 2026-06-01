@@ -1,19 +1,28 @@
 {
   "name": "atlas",
-  "version": "0.1.0",
-  "description": "Unified Atlassian access — Jira issues, Bitbucket pipelines, PRs",
+  "version": "0.2.0",
+  "description": "Unified Atlassian access \u2014 Jira issues, Bitbucket pipelines, PRs",
   "author": {
     "name": "yoonjong12",
     "url": "https://github.com/yoonjong12"
   },
   "license": "MIT",
-  "keywords": ["atlassian", "jira", "bitbucket", "pipeline", "pr"],
+  "keywords": [
+    "atlassian",
+    "jira",
+    "bitbucket",
+    "pipeline",
+    "pr"
+  ],
   "skills": "./skills/",
   "hooks": "./hooks.json",
   "interface": {
     "displayName": "atlas",
-    "shortDescription": "Unified Atlassian access — Jira issues, Bitbucket pipelines, PRs",
+    "shortDescription": "Unified Atlassian access \u2014 Jira issues, Bitbucket pipelines, PRs",
     "category": "Integration",
-    "capabilities": ["Read"]
+    "capabilities": [
+      "Read",
+      "Write"
+    ]
   }
 }

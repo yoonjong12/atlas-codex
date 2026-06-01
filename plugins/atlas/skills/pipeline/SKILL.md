@@ -1,6 +1,8 @@
 ---
 name: pipeline
-description: "Check Bitbucket Cloud pipeline status, wait for completion, and diagnose failures. This skill should be used when the user asks about CI/CD status, pipeline results, build failures, or after pushing code. Trigger on: 'pipeline', 'pipeline status', 'CI', 'build status', '파이프라인', '파이프라인 확인', 'check pipeline', 'build failed', '빌드 확인', 'CI 결과'"
+description: "Explicit-only atlas skill. Invoke by name as atlas:pipeline, @pipeline, or a direct request for the pipeline skill."
+disable-model-invocation: true
+user-invocable: true
 ---
 
 # Pipeline — Bitbucket CI Status

@@ -1,6 +1,8 @@
 ---
 name: plugin-sync
-description: "Sync plugins from remote to local. Pull latest from marketplace clones, refresh cache, verify. Git-host agnostic. Trigger on: 'plugin sync', 'plugin update', '플러그인 싱크', '플러그인 업데이트', 'sync plugin', 'pull plugin', '플러그인 최신화'"
+description: "Explicit-only atlas skill. Invoke by name as atlas:plugin-sync, @plugin-sync, or a direct request for the plugin-sync skill."
+disable-model-invocation: true
+user-invocable: true
 ---
 
 # Plugin Sync — Plugin marketplace sync

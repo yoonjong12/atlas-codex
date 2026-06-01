@@ -1,6 +1,8 @@
 ---
 name: jira
-description: "Access Jira issues — read, search, create, edit, comment, and transition. This skill should be used when the user asks to 'check an issue', 'look up a story', 'create a subtask', 'search jira', 'add a comment', 'change status', 'transition issue', or references a Jira issue key (e.g., WAO-372). Trigger on: '이슈 확인', '스토리 확인', '서브태스크', '이슈 만들어', '코멘트', '상태 변경', 'JQL', 'jira search'"
+description: "Explicit-only atlas skill. Invoke by name as atlas:jira, @jira, or a direct request for the jira skill."
+disable-model-invocation: true
+user-invocable: true
 ---
 
 # Jira — Issue Access Layer

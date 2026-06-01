@@ -62,6 +62,22 @@ curl -s -L -u "${BITBUCKET_EMAIL}:${BITBUCKET_API_TOKEN}" \
 
 ## Pull Request API
 
+### Create PR
+
+```bash
+curl -s -u "${BITBUCKET_EMAIL}:${BITBUCKET_API_TOKEN}" \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "PR title",
+    "description": "Markdown description",
+    "source": {"branch": {"name": "feature-branch"}},
+    "destination": {"branch": {"name": "main"}},
+    "close_source_branch": true
+  }' \
+  "https://api.bitbucket.org/2.0/repositories/${WORKSPACE}/${REPO_SLUG}/pullrequests"
+```
+
 ### Get PR Details
 
 ```bash
@@ -100,6 +116,16 @@ curl -s -u "${BITBUCKET_EMAIL}:${BITBUCKET_API_TOKEN}" \
 ```
 
 Response: `.values[]` with `.content.raw`, `.user.display_name`, `.created_on`, `.inline` (for inline comments: `.inline.path`, `.inline.from`, `.inline.to`)
+
+### Update PR Title or Description
+
+```bash
+curl -s -u "${BITBUCKET_EMAIL}:${BITBUCKET_API_TOKEN}" \
+  -X PUT \
+  -H "Content-Type: application/json" \
+  -d '{"description": "Updated markdown description"}' \
+  "https://api.bitbucket.org/2.0/repositories/${WORKSPACE}/${REPO_SLUG}/pullrequests/${PR_ID}"
+```
 
 ### Get PR Activity (Reviews)
 
@@ -143,6 +169,16 @@ curl -s -u "${BITBUCKET_EMAIL}:${BITBUCKET_API_TOKEN}" \
 curl -s -u "${BITBUCKET_EMAIL}:${BITBUCKET_API_TOKEN}" \
   -X DELETE \
   "https://api.bitbucket.org/2.0/repositories/${WORKSPACE}/${REPO_SLUG}/pullrequests/${PR_ID}/approve"
+```
+
+### Merge PR
+
+```bash
+curl -s -u "${BITBUCKET_EMAIL}:${BITBUCKET_API_TOKEN}" \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"close_source_branch": true, "message": "Merge message"}' \
+  "https://api.bitbucket.org/2.0/repositories/${WORKSPACE}/${REPO_SLUG}/pullrequests/${PR_ID}/merge"
 ```
 
 ## Pagination
