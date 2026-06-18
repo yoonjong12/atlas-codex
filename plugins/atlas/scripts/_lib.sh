@@ -9,8 +9,8 @@ API="https://api.bitbucket.org/2.0"
 _die() { echo "ERROR: $*" >&2; exit 1; }
 
 _require_creds() {
-  [[ -n "${BITBUCKET_EMAIL:-}" ]] || _die "BITBUCKET_EMAIL not set. Run /atlas:setup."
-  [[ -n "${BITBUCKET_API_TOKEN:-}" ]] || _die "BITBUCKET_API_TOKEN not set. Run /atlas:setup."
+  [[ -n "${BITBUCKET_EMAIL:-}" ]] || _die "BITBUCKET_EMAIL not set. Run atlas:setup."
+  [[ -n "${BITBUCKET_API_TOKEN:-}" ]] || _die "BITBUCKET_API_TOKEN not set. Run atlas:setup."
 }
 
 _curl() {

@@ -1,8 +1,7 @@
 ---
 name: repo
-description: "Explicit-only atlas skill. Invoke by name as atlas:repo, @repo, or a direct request for the repo skill."
-disable-model-invocation: true
-user-invocable: true
+description: "Bitbucket repo: clone/branches/commits/files. Trigger: 'repo', 'clone', 'branch', '레포', '브랜치', '클론'"
+argument-hint: "<repo slug, branch name, or Bitbucket URL>"
 ---
 
 # Repo — Bitbucket Repository Operations
@@ -11,7 +10,7 @@ All operations are wrapped in `${PLUGIN_ROOT}/scripts/bb_repo.sh`. Invoke subcom
 
 ## Prerequisites
 
-`BITBUCKET_EMAIL` + `BITBUCKET_API_TOKEN` in env. If missing, use the setup skill.
+`BITBUCKET_EMAIL` + `BITBUCKET_API_TOKEN` in env. If missing, use atlas:setup.
 
 ## Subcommands
 

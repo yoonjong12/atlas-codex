@@ -1,8 +1,7 @@
 ---
 name: pr
-description: "Explicit-only atlas skill. Invoke by name as atlas:pr, @pr, or a direct request for the pr skill."
-disable-model-invocation: true
-user-invocable: true
+description: "Bitbucket PR: view/diff/comment/approve. Trigger: 'PR', 'pull request', 'PR 확인', '승인', 'approve PR', 'PR 코멘트'"
+argument-hint: "<PR number or URL>"
 ---
 
 # PR — Bitbucket Pull Request Workflow
@@ -13,7 +12,7 @@ Prefer `${PLUGIN_ROOT}/scripts/bb_pr.sh` for supported operations. It auto-detec
 
 ## Prerequisites
 
-`BITBUCKET_EMAIL` and `BITBUCKET_API_TOKEN` must be in env. If missing, use the setup skill before doing PR work.
+`BITBUCKET_EMAIL` and `BITBUCKET_API_TOKEN` must be in env. If missing, use atlas:setup before doing PR work.
 
 ## Operating Rules
 
@@ -23,6 +22,7 @@ Prefer `${PLUGIN_ROOT}/scripts/bb_pr.sh` for supported operations. It auto-detec
 - Use `@file` for long markdown descriptions, review replies, and merge messages.
 - Summarize large diffs instead of pasting raw diff unless the user asks for exact output.
 - Do not merge when there are unresolved review concerns, failing checks, or unclear target branch unless the user explicitly confirms.
+- Follow `references/pr-conventions.md` for PR description structure and review reply format.
 
 ## Common Workflows
 
@@ -64,6 +64,15 @@ ${PLUGIN_ROOT}/scripts/bb_pr.sh inline <pr_id> path/to/file.py 42 @/tmp/inline-r
 ```
 
 Before replying, read `comments` and `activity` so the response matches the actual review thread.
+
+**`bb_pr.sh comment` posts a general comment — NOT a thread reply.**
+To reply inside a reviewer's comment thread, use the Bitbucket API directly with `"parent": {"id": <comment_id>}`. See `references/bitbucket-api.md` → "Reply to Comment Thread" and `references/pr-conventions.md` → "Review Reply Convention" for the full workflow.
+
+Steps to post a thread reply:
+1. `bb_pr.sh comments <pr_id>` — find the parent comment ID (`.id` field of the reviewer's comment)
+2. Write reply body to `/tmp/reply.md` following the "Review Reply Convention" in `pr-conventions.md` (lead tally + `### Important N: … — Fixed/Follow-up` blocks, mirroring the reviewer's severity label)
+3. Post via raw API with `{"content": {"raw": "..."}, "parent": {"id": <id>}}`
+4. Verify the reply appears nested under the reviewer's comment, not as a standalone comment
 
 ### Approve or Merge
 

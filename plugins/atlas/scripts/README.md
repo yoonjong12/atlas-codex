@@ -38,7 +38,7 @@ Re-apply after update:
 diff -r ~/.codex/plugins/cache/atlas/atlas/0.2.1/skills \
         ~/.codex/plugins/cache/atlas/atlas/<new>/skills
 
-# 2. re-apply by asking Claude: "refactor new atlas SKILL.md to use bb_*.sh"
+# 2. re-apply by asking Codex: "refactor new atlas SKILL.md to use bb_*.sh"
 ```
 
 Scripts in this directory are user-owned; plugin upgrades do not touch them.
@@ -48,10 +48,10 @@ Scripts in this directory are user-owned; plugin upgrades do not touch them.
 `~/.codex/settings.json` contains:
 
 ```json
-"Bash(~/.codex/plugins/cache/atlas/atlas/*/scripts/bb_auth.sh:*)",
-"Bash(~/.codex/plugins/cache/atlas/atlas/*/scripts/bb_pr.sh:*)",
-"Bash(~/.codex/plugins/cache/atlas/atlas/*/scripts/bb_pipeline.sh:*)",
-"Bash(~/.codex/plugins/cache/atlas/atlas/*/scripts/bb_repo.sh:*)"
+"Bash(~/.codex/atlas/scripts/bb_auth.sh:*)",
+"Bash(~/.codex/atlas/scripts/bb_pr.sh:*)",
+"Bash(~/.codex/atlas/scripts/bb_pipeline.sh:*)",
+"Bash(~/.codex/atlas/scripts/bb_repo.sh:*)"
 ```
 
 → no permission prompts for these script invocations.

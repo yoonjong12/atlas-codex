@@ -1,8 +1,7 @@
 ---
 name: setup
-description: "Explicit-only atlas skill. Invoke by name as atlas:setup, @setup, or a direct request for the setup skill."
-disable-model-invocation: true
-user-invocable: true
+description: "Configure Atlassian credentials. Trigger: 'atlas setup', 'configure atlassian', '설정', 'auth failed', '인증 실패'"
+argument-hint: ""
 ---
 
 # Setup — Atlassian Integration Configuration
@@ -11,64 +10,46 @@ Configure credentials for Bitbucket REST API and Jira MCP access, then verify co
 
 ## Prerequisites
 
-Two credential sets are required:
+The atlas plugin bundles `mcp-atlassian` (Jira only, 9 tools). Credentials are passed via shell environment variables.
 
 | Service | Credential | Location | Purpose |
 |---------|-----------|----------|---------|
-| Jira MCP | `JIRA_USERNAME` + `JIRA_API_TOKEN` | MCP server config | Issue operations via mcp-atlassian |
-| Bitbucket REST API | `BITBUCKET_EMAIL` + `BITBUCKET_API_TOKEN` | `~/.zshrc` environment variables | Pipeline, PR operations via curl |
+| Jira MCP | `JIRA_URL` + `JIRA_USERNAME` + `JIRA_API_TOKEN` | `~/.zshrc` | Issue operations via mcp-atlassian |
+| Bitbucket REST API | `BITBUCKET_EMAIL` + `BITBUCKET_API_TOKEN` | `~/.zshrc` | Pipeline, PR operations via curl |
 
 Token types (all from https://id.atlassian.net/manage-profile/security/api-tokens):
-- **Jira**: Unscoped API token (plain "API 토큰 만들기") — works with sooperset/mcp-atlassian
+- **Jira**: Unscoped API token (plain "API 토큰 만들기") — works with mcp-atlassian
 - **Bitbucket**: Scoped API token → app: "Bitbucket", scopes: `read:repository:bitbucket`, `read:pullrequest:bitbucket`, `write:pullrequest:bitbucket`, `read:pipeline:bitbucket`
 
 ## Process
 
-### Step 1: Check Jira MCP
-
-Verify the Jira MCP server is configured in the Codex MCP config:
+### Step 1: Check Jira credentials
 
 ```bash
-python3 -c "
-import json, os
-config_paths = [
-    os.path.expanduser('~/.codex/config.json'),
-    os.path.expanduser('~/.codex/config.json'),
-]
-for p in config_paths:
-    if os.path.exists(p):
-        with open(p) as f:
-            d = json.load(f)
-        mcp = d.get('mcpServers', {}).get('atlassian', {})
-        if mcp:
-            env = mcp.get('env', {})
-            print(f'Config: {p}')
-            print(f'JIRA_URL: {env.get(\"JIRA_URL\", \"(not set)\")}')
-            print(f'JIRA_USERNAME: {env.get(\"JIRA_USERNAME\", \"(not set)\")}')
-            print(f'JIRA_API_TOKEN: {\"(set)\" if env.get(\"JIRA_API_TOKEN\") else \"(not set)\"}')
-            break
-else:
-    print('atlassian MCP server not configured')
-"
+echo "JIRA_URL: ${JIRA_URL:-(not set)}"
+echo "JIRA_USERNAME: ${JIRA_USERNAME:-(not set)}"
+echo "JIRA_API_TOKEN: ${JIRA_API_TOKEN:+(set)}${JIRA_API_TOKEN:-(not set)}"
 ```
 
-If missing, guide the user:
+If missing, guide the user to add to `~/.zshrc`:
 
-1. Go to https://id.atlassian.com/manage-profile/security/api-tokens
-2. Create an API token
-3. Add the atlassian MCP server configuration with:
-   - `JIRA_URL`: e.g., `https://mindai.atlassian.net`
-   - `JIRA_USERNAME`: email address
-   - `JIRA_API_TOKEN`: the generated token
-   - `CONFLUENCE_URL`: e.g., `https://mindai.atlassian.net/wiki`
-   - `CONFLUENCE_USERNAME`: email address
-   - `CONFLUENCE_API_TOKEN`: the generated token
+```bash
+export JIRA_URL="https://your-domain.atlassian.net"
+export JIRA_USERNAME="user@example.com"
+export JIRA_API_TOKEN="ATATT3x..."
+```
 
-4. Restart Codex CLI
+Then: `source ~/.zshrc` and restart Codex CLI (`/exit` then relaunch).
 
 ### Step 2: Verify Jira Connectivity
 
-After restart, test MCP connection by running a test query:
+After restart, test MCP connection:
+
+```
+ToolSearch({ query: "select:mcp__atlassian__jira_search" })
+```
+
+Then run a test query:
 
 ```typescript
 jira_search({
@@ -145,7 +126,7 @@ for k, v in mapping.items():
 
 If `story_points` is not found, ask the user which field their project uses.
 
-The mapping is stored at `~/.codex/atlas/fields.json` and referenced by all atlas skills.
+The mapping is stored at `~/.codex/atlas/fields.json` and referenced by all atlas + jira-planner skills.
 
 ### Step 6: Report Status
 

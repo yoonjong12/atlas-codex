@@ -1,8 +1,7 @@
 ---
 name: pipeline
-description: "Explicit-only atlas skill. Invoke by name as atlas:pipeline, @pipeline, or a direct request for the pipeline skill."
-disable-model-invocation: true
-user-invocable: true
+description: "Bitbucket CI: status/wait/diagnose. Trigger: 'pipeline', 'CI', 'build', '파이프라인', 'build failed', 'CI 결과'"
+argument-hint: ""
 ---
 
 # Pipeline — Bitbucket CI Status
@@ -11,7 +10,7 @@ All operations are wrapped in `${PLUGIN_ROOT}/scripts/bb_pipeline.sh`. Invoke su
 
 ## Prerequisites
 
-`BITBUCKET_EMAIL` + `BITBUCKET_API_TOKEN` in env. If missing, use the setup skill.
+`BITBUCKET_EMAIL` + `BITBUCKET_API_TOKEN` in env. If missing, use atlas:setup.
 
 ## Subcommands
 
@@ -21,7 +20,7 @@ All operations are wrapped in `${PLUGIN_ROOT}/scripts/bb_pipeline.sh`. Invoke su
 | `bb_pipeline.sh get <uuid>` | pipeline details |
 | `bb_pipeline.sh steps <uuid>` | step table: name / state / result / duration / step_uuid |
 | `bb_pipeline.sh log <uuid> <step_uuid>` | raw step log output |
-| `bb_pipeline.sh wait <uuid> [interval=75]` | block until `COMPLETED`, print final state (run in background) |
+| `bb_pipeline.sh wait <uuid> [interval=75]` | block until `COMPLETED`, print final state (use `run_in_background: true`) |
 
 ## Process
 

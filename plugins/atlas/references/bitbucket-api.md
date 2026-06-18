@@ -157,6 +157,57 @@ curl -s -u "${BITBUCKET_EMAIL}:${BITBUCKET_API_TOKEN}" \
   "https://api.bitbucket.org/2.0/repositories/${WORKSPACE}/${REPO_SLUG}/pullrequests/${PR_ID}/comments"
 ```
 
+### Reply to Comment Thread
+
+**`bb_pr.sh comment` posts a top-level comment. To reply inside a reviewer's thread, include `"parent": {"id": <comment_id>}`.**
+
+```bash
+# 1. Find the parent comment ID from the comments list
+curl -s -u "${BITBUCKET_EMAIL}:${BITBUCKET_API_TOKEN}" \
+  "https://api.bitbucket.org/2.0/repositories/${WORKSPACE}/${REPO_SLUG}/pullrequests/${PR_ID}/comments?pagelen=100" \
+  | python3 -c "
+import sys, json
+for c in json.load(sys.stdin)['values']:
+    pid = c.get('parent', {}).get('id', '')
+    print(c['id'], c['user']['display_name'], repr(c['content']['raw'][:60]), '| parent:', pid)
+"
+
+# 2. Post a reply nested under the reviewer's comment
+curl -s -u "${BITBUCKET_EMAIL}:${BITBUCKET_API_TOKEN}" \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d "{\"content\": {\"raw\": \"$(cat /tmp/reply.md | python3 -c 'import sys; print(sys.stdin.read().replace("\\\\", "\\\\\\\\").replace("\"", "\\\\\"").replace(chr(10), "\\\\n"))')\"}, \"parent\": {\"id\": ${PARENT_COMMENT_ID}}}" \
+  "https://api.bitbucket.org/2.0/repositories/${WORKSPACE}/${REPO_SLUG}/pullrequests/${PR_ID}/comments"
+```
+
+For long reply bodies, write the JSON payload to a file to avoid shell escaping issues:
+
+```bash
+python3 -c "
+import json, sys
+body = open('/tmp/reply.md').read()
+print(json.dumps({'content': {'raw': body}, 'parent': {'id': ${PARENT_COMMENT_ID}}}))
+" > /tmp/reply-payload.json
+
+curl -s -u "${BITBUCKET_EMAIL}:${BITBUCKET_API_TOKEN}" \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d @/tmp/reply-payload.json \
+  "https://api.bitbucket.org/2.0/repositories/${WORKSPACE}/${REPO_SLUG}/pullrequests/${PR_ID}/comments"
+```
+
+Response: comment object with `.id` (the new reply's ID). Verify `.parent.id` matches the intended parent.
+
+### Delete PR Comment
+
+```bash
+curl -s -u "${BITBUCKET_EMAIL}:${BITBUCKET_API_TOKEN}" \
+  -X DELETE \
+  "https://api.bitbucket.org/2.0/repositories/${WORKSPACE}/${REPO_SLUG}/pullrequests/${PR_ID}/comments/${COMMENT_ID}"
+```
+
+Returns HTTP 204 on success. Use this to remove a mistakenly posted general comment before re-posting as a thread reply.
+
 ### Approve/Unapprove PR
 
 ```bash

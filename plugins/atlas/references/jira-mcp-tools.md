@@ -1,6 +1,6 @@
 # Jira MCP Tool Reference (mcp-atlassian)
 
-Tool reference for `sooperset/mcp-atlassian` MCP server, registered as `atlassian` in `~/.codex/config.json`.
+Tool reference for `sooperset/mcp-atlassian` MCP server, registered as `atlassian` in `~/.codex.json`.
 
 ## Tool Discovery
 

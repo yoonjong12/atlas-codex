@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sync Claude Code plugins from remote to local.
+# Sync Codex CLI plugins from remote to local.
 # Scans ~/.codex/.tmp/marketplaces/ — the single source of truth for plugin clones.
 # Usage: bb_plugin_sync.sh <subcommand> [args]
 
@@ -8,7 +8,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/_lib.sh"
 
-MARKETPLACE_DIR="${HOME}/.claude/plugins/marketplaces"
+MARKETPLACE_DIR="${HOME}/.codex/.tmp/marketplaces"
 
 _find_plugin_clones() {
   local filter="${1:-}"
@@ -21,7 +21,7 @@ _find_plugin_clones() {
       local remote version=""
       remote=$(git -C "$dir" remote get-url origin 2>/dev/null || echo "?")
       local pj
-      pj=$(find "$dir" -name "plugin.json" -path "*/.claude-plugin/*" -maxdepth 3 2>/dev/null | head -1)
+      pj=$(find "$dir" -name "plugin.json" -path "*/.codex-plugin/*" -maxdepth 3 2>/dev/null | head -1)
       [[ -n "$pj" ]] && version=$(_py "import json; print(json.load(open('$pj'))['version'])" 2>/dev/null || echo "?")
       local head_info
       head_info=$(git -C "$dir" log --oneline -1 2>/dev/null || echo "?")
@@ -59,10 +59,10 @@ _sync() {
   echo "=== Synced to: $new_head ==="
 
   echo ""
-  echo "=== Refreshing Claude Code plugin cache ==="
+  echo "=== Refreshing Codex CLI plugin cache ==="
   local plugin_name="" marketplace_name=""
   local pj
-  pj=$(find "$clone_path" -name "plugin.json" -path "*/.claude-plugin/*" -maxdepth 3 2>/dev/null | head -1)
+  pj=$(find "$clone_path" -name "plugin.json" -path "*/.codex-plugin/*" -maxdepth 3 2>/dev/null | head -1)
   if [[ -n "$pj" ]]; then
     plugin_name=$(_py "import json; print(json.load(open('$pj'))['name'])" 2>/dev/null || echo "")
   fi
@@ -77,12 +77,12 @@ _sync() {
   if [[ -n "$plugin_name" && -n "$marketplace_name" ]]; then
     local plugin_id="${plugin_name}@${marketplace_name}"
     echo "Plugin: $plugin_id"
-    claude plugin update "$plugin_id" 2>&1 || echo "(plugin update returned non-zero — cache may already be current)"
+    codex plugin marketplace upgrade "$marketplace_name" 2>&1 || echo "(marketplace upgrade returned non-zero — cache may already be current)"
   elif [[ -n "$plugin_name" ]]; then
     echo "Plugin: $plugin_name (marketplace unknown)"
-    claude plugin update "$plugin_name" 2>&1 || echo "(plugin update returned non-zero — cache may already be current)"
+    echo "Run: codex plugin marketplace upgrade <marketplace-name>"
   else
-    echo "WARN: could not detect plugin name. Run 'claude plugin update <name>@<marketplace>' manually."
+    echo "WARN: could not detect plugin name. Run 'codex plugin marketplace upgrade <marketplace-name>' manually."
   fi
 }
 
@@ -103,7 +103,7 @@ _verify() {
   remote_head=$(git -C "$clone_path" rev-parse "origin/$branch" 2>/dev/null || echo "?")
 
   local pj version=""
-  pj=$(find "$clone_path" -name "plugin.json" -path "*/.claude-plugin/*" -maxdepth 3 2>/dev/null | head -1)
+  pj=$(find "$clone_path" -name "plugin.json" -path "*/.codex-plugin/*" -maxdepth 3 2>/dev/null | head -1)
   [[ -n "$pj" ]] && version=$(_py "import json; print(json.load(open('$pj'))['version'])" 2>/dev/null || echo "?")
 
   echo "  Local HEAD:  ${local_head:0:7}"

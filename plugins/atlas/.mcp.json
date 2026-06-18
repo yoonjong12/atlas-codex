@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "atlassian": {
+      "command": "uvx",
+      "args": [
+        "mcp-atlassian",
+        "--enabled-tools",
+        "jira_get_issue,jira_search,jira_create_issue,jira_update_issue,jira_add_comment,jira_transition_issue,jira_get_transitions,jira_create_issue_link,jira_get_user_profile"
+      ],
+      "env": {
+        "JIRA_URL": "${JIRA_URL}",
+        "JIRA_USERNAME": "${JIRA_USERNAME}",
+        "JIRA_API_TOKEN": "${JIRA_API_TOKEN}"
+      }
+    }
+  }
+}

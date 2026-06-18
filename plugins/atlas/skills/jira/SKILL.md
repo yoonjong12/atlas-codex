@@ -1,13 +1,26 @@
 ---
 name: jira
-description: "Explicit-only atlas skill. Invoke by name as atlas:jira, @jira, or a direct request for the jira skill."
-disable-model-invocation: true
-user-invocable: true
+description: "Jira: read/search/create/edit/comment/transition. Trigger: issue key (e.g. WAO-123), '이슈', '스토리', '서브태스크', 'JQL', '상태변경', 'jira search'"
+argument-hint: "<issue key, JQL query, or description>"
 ---
 
 # Jira — Issue Access Layer
 
 Read, search, create, edit, comment, and transition Jira issues via mcp-atlassian MCP.
+
+## Tool Discovery
+
+MCP tools are deferred. Load by exact name before first use:
+
+```
+ToolSearch({ query: "select:mcp__atlassian__jira_get_issue,mcp__atlassian__jira_search" })
+```
+
+Load write tools only when needed:
+
+```
+ToolSearch({ query: "select:mcp__atlassian__jira_create_issue,mcp__atlassian__jira_update_issue,mcp__atlassian__jira_add_comment,mcp__atlassian__jira_transition_issue,mcp__atlassian__jira_get_transitions" })
+```
 
 ## Read Operations
 
@@ -135,7 +148,7 @@ jira_update_issue({
 })
 ```
 
-If the file doesn't exist, use the setup skill first.
+If the file doesn't exist, use atlas:setup first.
 
 ## Token Efficiency
 

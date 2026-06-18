@@ -1,13 +1,20 @@
 ---
 name: triage
-description: "Explicit-only atlas skill. Invoke by name as atlas:triage, @triage, or a direct request for the triage skill."
-disable-model-invocation: true
-user-invocable: true
+description: "Bug triage: search Jira duplicates, create/skip. Trigger: 'triage', 'bug report', 'duplicate', '버그 트리아지', 'known issue'"
+argument-hint: "<bug report, error message, or symptom description>"
 ---
 
 # Triage — Bug Duplicate Detection
 
 Search Jira for duplicate or related issues before creating new ones. Prevents duplicate tickets and connects related work.
+
+## Tool Discovery
+
+Load required MCP tools by exact name:
+
+```
+ToolSearch({ query: "select:mcp__atlassian__jira_search,mcp__atlassian__jira_get_issue" })
+```
 
 ## Process
 
@@ -84,14 +91,23 @@ Show the user:
 ### Step 5: Execute Decision
 
 **If duplicate** — add context to existing issue:
+```
+ToolSearch({ query: "select:mcp__atlassian__jira_add_comment" })
+```
 
 Add a comment with the new occurrence context, environment details, and any additional symptoms.
 
 **If new issue** — create with full context:
+```
+ToolSearch({ query: "select:mcp__atlassian__jira_create_issue" })
+```
 
 Include error signature, reproduction steps, and links to any related issues found during search.
 
-**If related** — create new issue and link to the related one.
+**If related** — create new issue and link:
+```
+ToolSearch({ query: "select:mcp__atlassian__jira_create_issue_link" })
+```
 
 ## Additional Resources
 

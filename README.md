@@ -1,6 +1,6 @@
 # atlas
 
-Unified Atlassian access — Jira issues, Bitbucket pipelines, PRs, and repositories.
+Unified Atlassian access layer for Codex CLI — Jira issues, Bitbucket pipelines, PRs, and repositories.
 
 ## Install
 
@@ -9,24 +9,37 @@ codex plugin marketplace add yoonjong12/atlas-codex
 codex plugin add atlas@atlas
 ```
 
+## Quick Start
+
+```text
+atlas:setup
+```
+
 ## Skills
 
-| Skill | Description |
-|-------|-------------|
-| jira | Read, search, create, edit, comment, and transition Jira issues |
-| pipeline | Check Bitbucket pipeline status, wait for completion, diagnose failures |
-| pr | View PR details, diffs, comments, reviews; post comments and approve |
-| repo | Bitbucket repository operations — clone, info, branches, commits, file contents |
-| setup | Configure Atlassian credentials and verify connectivity |
-| plugin-sync | Sync plugins from remote marketplace clones to local |
-| triage | Triage bug reports by searching Jira for duplicates |
+| Skill | Purpose |
+|-------|---------|
+| `atlas:setup` | Configure Jira + Bitbucket credentials and verify connectivity |
+| `atlas:jira` | Issue CRUD, JQL search, comments, transitions, links |
+| `atlas:triage` | Bug duplicate detection + new issue creation |
+| `atlas:pipeline` | Pipeline status, monitoring, failure diagnosis |
+| `atlas:pr` | PR details, diff, comments, reviews, description updates |
+| `atlas:repo` | Clone, branches, commits, file contents, repo info |
+| `atlas:plugin-sync` | Sync plugins from marketplace clones to local cache |
 
 ## Prerequisites
 
-- **Jira**: MCP server (`mcp-atlassian`) configured with `JIRA_USERNAME` + `JIRA_API_TOKEN`
-- **Bitbucket**: `BITBUCKET_EMAIL` + `BITBUCKET_API_TOKEN` environment variables
+| Service | Token Type | Scopes |
+|---------|------------|--------|
+| Jira | Unscoped API token | None |
+| Bitbucket | Scoped API token, app: Bitbucket | `read:repository`, `read:pullrequest`, `write:pullrequest`, `read:pipeline` |
 
-Run the `setup` skill for guided configuration.
+All tokens come from https://id.atlassian.net/manage-profile/security/api-tokens.
+
+## Architecture
+
+- **Jira**: `sooperset/mcp-atlassian` local MCP server.
+- **Bitbucket**: Direct REST API via curl for PRs, pipelines, and repo operations.
 
 ## License
 

@@ -1,15 +1,14 @@
 ---
 name: plugin-sync
-description: "Explicit-only atlas skill. Invoke by name as atlas:plugin-sync, @plugin-sync, or a direct request for the plugin-sync skill."
-disable-model-invocation: true
-user-invocable: true
+description: "Sync plugins from remote. Trigger: 'plugin sync', 'plugin update', '플러그인 싱크', '최신화'"
+argument-hint: "[plugin-name or marketplace-clone-path]"
 ---
 
-# Plugin Sync — Plugin marketplace sync
+# Plugin Sync — Codex CLI plugin marketplace sync
 
-Pull latest from remote into marketplace clone directories, refresh plugin cache, verify.
+Pull latest from remote into `~/.codex/.tmp/marketplaces/<name>/`, refresh Codex CLI plugin cache, verify.
 
-Single source of truth: marketplace plugin clone directories. Git-host agnostic (GitHub, Bitbucket, any git remote).
+Single source of truth: `~/.codex/.tmp/marketplaces/`. Git-host agnostic (GitHub, Bitbucket, any git remote).
 
 ## Steps
 
@@ -36,5 +35,5 @@ bash ${PLUGIN_ROOT}/scripts/bb_plugin_sync.sh all [filter] [branch]
 
 ## Notes
 
-- This is inbound pull (opposite of outbound push/publish).
-- After sync, reload plugins if session is active.
+- Opposite of `codex-plugin-dev:publish` (outbound push). This is inbound pull.
+- After sync, tell user to run restart Codex CLI if session is active.
